@@ -3,6 +3,7 @@ package edu.val.formulario;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -224,8 +225,17 @@ public class MainActivity extends AppCompatActivity {
                 mayor_edad = false;
             }
             persona = new Persona(nombre_persona, edad_numerica, sexo, mayor_edad);
-            Log.d("ETIQUETA_LOG", "Nombre de la persona = "+ persona.nombre);
+            Log.d("ETIQUETA_LOG", "Nombre de la persona = "+ persona.getNombre());
+            Intent intent_bienvenida = new Intent(this, BienvenidaActivity.class);
+            //Class claseBienvenida = BienvenidaActivity.class;
+            //CADA CLASE, crea automáticamente un objeto Class que describe la propia clase
+            //el objeto class se usa para refexión: saber qué atriubtos, métodos, contenido de una clase
+            //se crea automáticamente para cada clase
+            //claseBienvenida.getm
             //persona.getNombre();
+            intent_bienvenida.putExtra("NOMBRE", persona.getNombre());
+            //intent_bienvenida.putExtra("PERSONA", persona);//hay que convertirlo a serializable o parcelable
+            startActivity(intent_bienvenida);
         }
 
         //persona = new Persona("VALE", 38, 'H', true);
