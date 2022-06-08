@@ -5,12 +5,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.AlarmClock;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
+
+import com.google.android.gms.actions.NoteIntents;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,11 +63,62 @@ public class MainActivity extends AppCompatActivity {
     //TODO definir un proceso de validación para los campos de nombre y edad
     //quiero guardar si los datos del formulario son válidos o no
 
+    private void crearAlarma ()
+    {
+
+        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM)
+                .putExtra(AlarmClock.EXTRA_MESSAGE, "DESPIERTA")
+                .putExtra(AlarmClock.EXTRA_HOUR, 21)
+                .putExtra(AlarmClock.EXTRA_MINUTES, 43);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            Log.d("ETIQUETA_LOG", "Alarma generada");
+            startActivity(intent);
+        }
+    }
+
+    static final int REQUEST_SELECT_CONTACT = 1;
+
+    public void selectContact() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_SELECT_CONTACT);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SELECT_CONTACT && resultCode == RESULT_OK) {
+            Uri contactUri = data.getData();
+            Log.d("ETIQUETA_LOG", "URI " + contactUri.toString());
+            // Do something with the selected contact at contactUri
+        //...
+        }
+    }
+
+
+        public void createNote(String subject, String text) {
+        Intent intent = new Intent(NoteIntents.ACTION_CREATE_NOTE)
+                .putExtra(NoteIntents.EXTRA_NAME, subject)
+                .putExtra(NoteIntents.EXTRA_TEXT, text);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            Log.d("ETIQUETA_LOG", "Estoy pidiendo crear una nota");
+            startActivity(intent);
+        } else {
+            Log.d("ETIQUETA_LOG", "NO puedo crear una nota");
+        }
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //crearAlarma ();
+        //selectContact ();
+        createNote("ASUNTO", "Duda de Android");
         setContentView(R.layout.activity_main);
         Log.d("ETIQUETA_LOG", "entrando en onCreate()");
         //this precede al nombre de una función o una propiedad de la clase
@@ -234,7 +292,11 @@ public class MainActivity extends AppCompatActivity {
             //claseBienvenida.getm
             //persona.getNombre();
             intent_bienvenida.putExtra("NOMBRE", persona.getNombre());
-            //intent_bienvenida.putExtra("PERSONA", persona);//hay que convertirlo a serializable o parcelable
+            intent_bienvenida.putExtra("PERSONA", persona);//hay que convertirlo a serializable o parcelable
+            //podría meter una lista de personas al ser Parcelable
+            List<Persona> lista_p = List.of(persona, persona);
+            intent_bienvenida.putExtra("PERSONAS", lista_p.toArray());
+            //
             startActivity(intent_bienvenida);
         }
 
