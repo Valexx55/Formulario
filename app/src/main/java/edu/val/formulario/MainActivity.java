@@ -1,5 +1,9 @@
 package edu.val.formulario;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private int nveces_hacia_atras;
 
     private static final int COD_PETICION_COLOR = 222;
+
+    private ActivityResultLauncher<Intent> activityResultLauncher;//uso este objeto para lanzar la subactivdad y recibir el resultado
 
     //INICIALIZAR LAS VARIABLES / OBJETOS
     //NUMEROS - INICIAN A CERO
@@ -158,6 +164,20 @@ public class MainActivity extends AppCompatActivity {
         this.checkBoxMayorEdad = findViewById(R.id.checkBoxMayorEdad);
 
         this.nveces_hacia_atras=0;
+
+        //1º programar el objeto que gestiona la subactividad
+
+        this.activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    //aquí recibo la respuesta
+                    if (result.getResultCode() == RESULT_OK)
+                    {
+                        //obtengo el intent
+                        Intent intent_resultado = result.getData();
+                        int color_seleccioando = intent_resultado.getIntExtra("COLOR_ELEGIDO", R.color.white);
+                        findViewById(R.id.botonColorFavorito).setBackgroundColor(color_seleccioando);
+                    }
+                });
 
     }
 
@@ -375,12 +395,14 @@ public class MainActivity extends AppCompatActivity {
     public void seleccionarColor(View view) {
         Log.d("ETIQUETA_LOG", "Toca color");
         Intent intent = new Intent(this, SeleccionColorActivity.class );
-        startActivityForResult(intent, COD_PETICION_COLOR);//DEPRECADO:Hay una forma nueva en una más moderno, de hacerlo "mejor"
+        //método deprecado
+        //startActivityForResult(intent, COD_PETICION_COLOR);//DEPRECADO:Hay una forma nueva en una más moderno, de hacerlo "mejor"
+        this.activityResultLauncher.launch(intent);
     }
 
     @Override
-    protected void onActivityResult (int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult (int requestCode, int resultCode, @Nullable Intent intent_resultado) {
+        super.onActivityResult(requestCode, resultCode, intent_resultado);
         if (requestCode == COD_PETICION_COLOR)
         {
             Log.d("ETIQUETA_LOG", "Es la respuesta a mi petición desde seleccionarColor ");
@@ -388,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 Log.d("ETIQUETA_LOG", "La subactividad finalizó bien ");
                 //obtener el color
-                int color_seleccionado = data.getIntExtra("COLOR_ELEGIDO", R.color.white);
+                int color_seleccionado = intent_resultado.getIntExtra("COLOR_ELEGIDO", R.color.white);
                 findViewById(R.id.botonColorFavorito).setBackgroundColor(color_seleccionado);//pillo el boton y le pongo el fondo
             }
         }
