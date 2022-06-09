@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Formulario"
         tools:targetApi="31">
         <activity
+            android:name=".SeleccionColorActivity"
+            android:exported="false" />
+        <activity
             android:name=".BienvenidaActivity"
             android:exported="false" />
         <activity

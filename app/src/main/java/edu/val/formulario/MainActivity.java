@@ -1,6 +1,7 @@
 package edu.val.formulario;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean aceptarTocado;
     private boolean formularioValido;
     private int nveces_hacia_atras;
+
+    private static final int COD_PETICION_COLOR = 222;
 
     //INICIALIZAR LAS VARIABLES / OBJETOS
     //NUMEROS - INICIAN A CERO
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SELECT_CONTACT && resultCode == RESULT_OK) {
@@ -95,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             // Do something with the selected contact at contactUri
         //...
         }
-    }
+    }*/
 
 
         public void createNote(String subject, String text) {
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         //crearAlarma ();
         //selectContact ();
-        createNote("ASUNTO", "Duda de Android");
+        //createNote("ASUNTO", "Duda de Android");
         setContentView(R.layout.activity_main);
         Log.d("ETIQUETA_LOG", "entrando en onCreate()");
         //this precede al nombre de una función o una propiedad de la clase
@@ -368,4 +371,27 @@ public class MainActivity extends AppCompatActivity {
         }
         //super.onBackPressed();
     }
+
+    public void seleccionarColor(View view) {
+        Log.d("ETIQUETA_LOG", "Toca color");
+        Intent intent = new Intent(this, SeleccionColorActivity.class );
+        startActivityForResult(intent, COD_PETICION_COLOR);//DEPRECADO:Hay una forma nueva en una más moderno, de hacerlo "mejor"
+    }
+
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == COD_PETICION_COLOR)
+        {
+            Log.d("ETIQUETA_LOG", "Es la respuesta a mi petición desde seleccionarColor ");
+            if (resultCode == RESULT_OK)
+            {
+                Log.d("ETIQUETA_LOG", "La subactividad finalizó bien ");
+                //obtener el color
+                int color_seleccionado = data.getIntExtra("COLOR_ELEGIDO", R.color.white);
+                findViewById(R.id.botonColorFavorito).setBackgroundColor(color_seleccionado);//pillo el boton y le pongo el fondo
+            }
+        }
+    }
+
 }
