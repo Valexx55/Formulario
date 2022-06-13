@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Limpiar"
+        android:id="@+id/opcionlimpiar"
+        android:orderInCategory="1"
+        android:icon="@drawable/ic_baseline_cleaning_services_24"
+        app:showAsAction="always|withText"/>
+
+    <item android:title="Salir"
+        android:id="@+id/opcionsalir"
+        android:orderInCategory="2"
+        app:showAsAction="never"/>
+</menu>

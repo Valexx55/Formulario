@@ -6,8 +6,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -15,10 +17,14 @@ import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.google.android.gms.actions.NoteIntents;
 
@@ -29,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     //EN UN CLASE SIEMPRE TENGO ATRIBUTOS Y MÉTODOS
     //LOS ATRIBUTOS SON LAS CARACTETRISTICAS O PROPIEDADES QUE COMPONEN LA CLASE
     //LAS FUNCIONES O MÉTODOS HABLAN DE LO QUE SE PUEDE HACER/LO QUE HACE ESA CLASE
+
+    //MENÚ: VAMOS A HACER UN MENÚ CON DOS OPCIONES: BORRAR EL FORMULARIO Y OTRA PARA SALIR
 
     private EditText editTextNombre;
     private EditText editTextEdad;
@@ -120,6 +128,80 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //este método es obligatorio para dibujar el menú de la barrita
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();//este método me da el objeto para "inflar" dibujar el menú
+        menuInflater.inflate(R.menu.menu_formulario, menu);//menu es como si fuera el padre menu_formulario nuestro hijo
+        return true;//super.onCreateOptionsMenu(menu);
+    }
+
+    //este método es necesiario
+    //para escuchar las acciones sobre el menú
+    //al tocar una opción del menú, se realiza un callback a este método
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+            Log.d("ETIQUETA_LOG", "OPCIÓN MENÚ TOCADA");
+            int id_item = item.getItemId();
+            switch (id_item)
+            {
+                case R.id.opcionlimpiar:
+                    //el usuario le ha dado a limpiar
+                    limpiarFormulario();
+                    break;
+                case R.id.opcionsalir:
+                    //el usuario le ha dado a salir
+                    salir();
+                    break;
+                case android.R.id.home:
+                    Log.d("ETIQUETA_LOG", "Ha tocado la fecha de ir para atrás");
+                    salir();
+            }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void limpiarFormulario()
+    {
+        this.editTextEdad.setText("");
+        this.editTextNombre.setText("");
+        this.radioButtonMujer.setChecked(false);
+        this.radioButtonHombre.setChecked(false);
+        this.checkBoxMayorEdad.setChecked(false);
+
+        Log.d("ETIQUETA_LOG", "Formulario limpio...");
+        Toast toast = Toast.makeText(this, "Formulario LIMPIO", Toast.LENGTH_LONG);//preparo
+        toast.show();//muestro
+
+    }
+
+    private void salir ()
+    {
+        Log.d("ETIQUETA_LOG", "Saliendo...");
+        //this.finish();
+        //vamos a preguntar eso...quieres salir de verdad???
+        //vamos a dibujar una vetana emergente
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+        alertDialog.setTitle("AVISO");
+        alertDialog.setMessage("¿Desea salir?");
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO", (dialogInterface, i) -> {
+            dialogInterface.cancel();//no quiere salir, cierro el mensaje
+        });
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "SÍ", (dialogInterface, i) -> {
+            this.finish();
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "NO SÉ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //MainActivity.this.finish(); //esto sería salir de la forma antigua/ sin lambdas sin funciones anónimas
+                dialogInterface.cancel();//no quiere salir, cierro el mensaje
+            }
+        });
+
+        alertDialog.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
         //this precede al nombre de una función o una propiedad de la clase
         //this es la nueva pantalla / un objeto de la propia clase / UNA VARIABLE de MainActivity
         this.iniciarActividad();
+        //dibujamos la flecha hacia atrás
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         if (savedInstanceState!=null)
@@ -307,6 +391,8 @@ public class MainActivity extends AppCompatActivity {
             }
             persona = new Persona(nombre_persona, edad_numerica, sexo, mayor_edad);
             Log.d("ETIQUETA_LOG", "Nombre de la persona = "+ persona.getNombre());
+            Persona persona2 = new Persona("Macarena", edad_numerica, sexo, mayor_edad);
+            Log.d("ETIQUETA_LOG", "Nombre de la persona = "+ persona2.getNombre());
             Intent intent_bienvenida = new Intent(this, BienvenidaActivity.class);
             //Class claseBienvenida = BienvenidaActivity.class;
             //CADA CLASE, crea automáticamente un objeto Class que describe la propia clase

@@ -32,6 +32,7 @@ public class Persona implements Parcelable { //tipo recomendado por Android
 
 
     public Persona(String nombre, int edad, char sexo, boolean mayor_edad) {
+        //this aparece en el constructor
         //this representa a la nueva persona que se está creando en este momento
         this.nombre = nombre;
         this.edad = edad;
@@ -42,7 +43,8 @@ public class Persona implements Parcelable { //tipo recomendado por Android
 
 
     public String getNombre() {
-        return this.nombre;
+        //o this aparece en otro método que no es el constructor
+        return this.nombre;//this es el objeto llamante
     }
 
     public void setNombre(String nombre) {
