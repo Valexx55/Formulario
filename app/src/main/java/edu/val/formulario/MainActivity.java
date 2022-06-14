@@ -17,12 +17,14 @@ import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton radioButtonHombre;
     private RadioButton radioButtonMujer;
     private CheckBox checkBoxMayorEdad;
+    private ImageView imagen;
 
     private boolean aceptarTocado;
     private boolean formularioValido;
@@ -52,11 +55,16 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> activityResultLauncher;//uso este objeto para lanzar la subactivdad y recibir el resultado
 
+
     //INICIALIZAR LAS VARIABLES / OBJETOS
     //NUMEROS - INICIAN A CERO
     //BOOLEAN - INICIAN A FALSE
     // STRING - NULL A CADENA VACÍA
     // OBJETOS (EDITTEXT, RADIOBUTTON, FILE) - A NULL
+
+
+
+
 
     //para considerar el formulario válido, vamos a controlar:
         //que el nombre sea distinto de null y que al menos tiene algúna letra de la A a la Z o espacios
@@ -79,6 +87,62 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO definir un proceso de validación para los campos de nombre y edad
     //quiero guardar si los datos del formulario son válidos o no
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //crearAlarma ();
+        //selectContact ();
+        //createNote("ASUNTO", "Duda de Android");
+        setContentView(R.layout.activity_main);
+        Log.d("ETIQUETA_LOG", "entrando en onCreate()");
+        //this precede al nombre de una función o una propiedad de la clase
+        //this es la nueva pantalla / un objeto de la propia clase / UNA VARIABLE de MainActivity
+        this.iniciarActividad();
+        //dibujamos la flecha hacia atrás
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        if (savedInstanceState!=null)
+
+        {
+            //la actividad se ha recreado y se ha guardado información
+            Log.d("ETIQUETA_LOG", "EN EL SACO HAY INFORMACIÓN (viene de recrearse)");
+            this.formularioValido = savedInstanceState.getBoolean("VALIDO");
+
+        } else
+
+        {
+            Log.d("ETIQUETA_LOG", "EN EL SACO NO HAY INFORMACIÓN (actividad nueva o no se ha guardado nada)");
+            //la actividad se crea por primera vez o no se ha guardado información
+
+        }
+        Log.d("ETIQUETA_LOG", "ES VALIDO en Oncreate = "+ formularioValido);
+
+        //dibujamos el menú contextual sobre el icono
+        this.imagen = findViewById(R.id.imageView);
+        registerForContextMenu(imagen);
+
+    }
+
+
+    //este método se invoca para dibujar el menú sobre el icono
+    //cuando lo deje pulsado: menu contextual
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        //vamos a añadir la opción de borrar la imagen
+        menu.add(Menu.NONE, 3, 3, "BORRAR");
+    }
+
+    //este método es invocado al selecionar una opción del menú contextual
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        Log.d("ETIQUETA_LOG", "Opción tocada = " + item.getItemId());
+        this.imagen.setVisibility(View.INVISIBLE);
+        return super.onContextItemSelected(item);
+    }
 
     private void crearAlarma ()
     {
@@ -203,39 +267,7 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        //crearAlarma ();
-        //selectContact ();
-        //createNote("ASUNTO", "Duda de Android");
-        setContentView(R.layout.activity_main);
-        Log.d("ETIQUETA_LOG", "entrando en onCreate()");
-        //this precede al nombre de una función o una propiedad de la clase
-        //this es la nueva pantalla / un objeto de la propia clase / UNA VARIABLE de MainActivity
-        this.iniciarActividad();
-        //dibujamos la flecha hacia atrás
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-        if (savedInstanceState!=null)
-
-        {
-            //la actividad se ha recreado y se ha guardado información
-            Log.d("ETIQUETA_LOG", "EN EL SACO HAY INFORMACIÓN (viene de recrearse)");
-            this.formularioValido = savedInstanceState.getBoolean("VALIDO");
-
-        } else
-
-        {
-            Log.d("ETIQUETA_LOG", "EN EL SACO NO HAY INFORMACIÓN (actividad nueva o no se ha guardado nada)");
-            //la actividad se crea por primera vez o no se ha guardado información
-
-        }
-        Log.d("ETIQUETA_LOG", "ES VALIDO en Oncreate = "+ formularioValido);
-
-    }
 
     private void iniciarActividad()
     {
