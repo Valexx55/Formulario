@@ -29,10 +29,11 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.actions.NoteIntents;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnFocusChangeListener {
 
     //EN UN CLASE SIEMPRE TENGO ATRIBUTOS Y MÉTODOS
     //LOS ATRIBUTOS SON LAS CARACTETRISTICAS O PROPIEDADES QUE COMPONEN LA CLASE
@@ -280,6 +281,8 @@ public class MainActivity extends AppCompatActivity {
         this.checkBoxMayorEdad = findViewById(R.id.checkBoxMayorEdad);
 
         this.nveces_hacia_atras=0;
+        //cuando cambie el foco sobre este elemento, llamas al método onFocusChange de esta clase
+        this.editTextNombre.setOnFocusChangeListener(this);
 
         //1º programar el objeto que gestiona la subactividad
 
@@ -334,13 +337,13 @@ public class MainActivity extends AppCompatActivity {
             String nombre = this.editTextNombre.getText().toString();
             //con esta expresión regular, estoy diciendo, que el nombre es válidos
             //si tiene caracteres del alfabéticos de la a la z mayusculas o minusuclas y espacios y al menos uno (+)
-            //nombre_valido = (nombre!=null) && nombre.matches("[a-zA-Z\\s]+");
-            if (nombre.equals(""))
+            nombre_valido = (nombre!=null) && nombre.matches("[a-zA-Z\\s]+");
+            /*if (nombre.equals(""))
             {
                 nombre_valido = false;
             } else {
                 nombre_valido = true;
-            }
+            }*/
 
            // nombre_valido = !nombre.equals("");
 
@@ -534,4 +537,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onFocusChange(View view, boolean tieneFoco) {
+    //yo quiero validar, cuando pierda el foco
+        if (!tieneFoco)
+        {
+            EditText editTextNombre = (EditText) view;
+            String nombreIntro = editTextNombre.getText().toString();
+
+            //si no es válido, vamos a animar su envolotorio el TextInputLayout del nombre
+            if (!esNombreValido())
+            {
+                TextInputLayout envoltorioNombre = findViewById(R.id.tilnombre);
+                envoltorioNombre.setError("Nombre incorrecto");
+            } else {
+                TextInputLayout envoltorioNombre = findViewById(R.id.tilnombre);
+                envoltorioNombre.setErrorEnabled(false);
+            }
+        }
+    }
 }
