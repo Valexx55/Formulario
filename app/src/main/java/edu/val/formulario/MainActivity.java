@@ -29,6 +29,8 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.actions.NoteIntents;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
@@ -240,6 +242,20 @@ public class MainActivity extends AppCompatActivity implements View.OnFocusChang
 
     }
 
+    public void limpiarFormulario2(View view)
+    {
+        this.editTextEdad.setText("");
+        this.editTextNombre.setText("");
+        this.radioButtonMujer.setChecked(false);
+        this.radioButtonHombre.setChecked(false);
+        this.checkBoxMayorEdad.setChecked(false);
+
+        Log.d("ETIQUETA_LOG", "Formulario limpio...");
+        Toast toast = Toast.makeText(this, "Formulario LIMPIO", Toast.LENGTH_LONG);//preparo
+        toast.show();//muestro
+
+    }
+
     private void salir ()
     {
         Log.d("ETIQUETA_LOG", "Saliendo...");
@@ -281,8 +297,10 @@ public class MainActivity extends AppCompatActivity implements View.OnFocusChang
         this.checkBoxMayorEdad = findViewById(R.id.checkBoxMayorEdad);
 
         this.nveces_hacia_atras=0;
+
         //cuando cambie el foco sobre este elemento, llamas al método onFocusChange de esta clase
         this.editTextNombre.setOnFocusChangeListener(this);
+        this.editTextEdad.setOnFocusChangeListener(this);
 
         //1º programar el objeto que gestiona la subactividad
 
@@ -312,13 +330,13 @@ public class MainActivity extends AppCompatActivity implements View.OnFocusChang
             String edad = this.editTextEdad.getText().toString();
             //con esta expresión regular, estoy diciendo, que la edad es válida
             //si tiene caracteres del 0 al 9 (dígitos) y al menos uno (+)
-            //edad_valida = (edad != null) && edad.matches("[0-9]+");//EXPRESIÓN REGULARES - VALIDAR
-            if (edad.equals(""))
+            edad_valida = (edad != null) && edad.matches("[0-9]+");//EXPRESIÓN REGULARES - VALIDAR
+            /*if (edad.equals(""))
             {
                 edad_valida = false;
             } else {
                 edad_valida = true;
-            }
+            }*/
 
             // edad_valida = !edad.equals("");
 
@@ -442,6 +460,8 @@ public class MainActivity extends AppCompatActivity implements View.OnFocusChang
             intent_bienvenida.putExtra("PERSONAS", lista_p.toArray());
             //
             startActivity(intent_bienvenida);
+        } else {
+            mostrarSnackBar();
         }
 
         //persona = new Persona("VALE", 38, 'H', true);
@@ -537,23 +557,43 @@ public class MainActivity extends AppCompatActivity implements View.OnFocusChang
         }
     }
 
+    //TODO haced validación dinámica para la edad (igual que con el nombre)
+    //cuando pierda el foco, la caja edad, validarla y mostrar si tiene error o no
+    //en su envolotorio (textinputlayout)
     @Override
     public void onFocusChange(View view, boolean tieneFoco) {
-    //yo quiero validar, cuando pierda el foco
-        if (!tieneFoco)
-        {
-            EditText editTextNombre = (EditText) view;
-            String nombreIntro = editTextNombre.getText().toString();
+        //yo quiero validar, cuando pierda el foco
+        if (!tieneFoco) {
 
-            //si no es válido, vamos a animar su envolotorio el TextInputLayout del nombre
-            if (!esNombreValido())
-            {
+            if (view.getId() == R.id.editTextNombre) {
                 TextInputLayout envoltorioNombre = findViewById(R.id.tilnombre);
-                envoltorioNombre.setError("Nombre incorrecto");
+                if (!esNombreValido()) {
+                    envoltorioNombre.setError("Nombre incorrecto");
+                    Log.d("ETIQUETA_LOG", "Nombre incorrecto ");
+                } else {
+                    envoltorioNombre.setErrorEnabled(false);
+                    Log.d("ETIQUETA_LOG", "Nombre correcto ");
+                }
             } else {
-                TextInputLayout envoltorioNombre = findViewById(R.id.tilnombre);
-                envoltorioNombre.setErrorEnabled(false);
+                //ha perdido el foco la edad, vamos a validarla
+                TextInputLayout envoltorioEdad = findViewById(R.id.tiledad);
+                if (!esEdadValida()) {
+                    Log.d("ETIQUETA_LOG", "Edad incorrecta ");
+                    envoltorioEdad.setError("Edad incorrecta");
+                } else {
+                    Log.d("ETIQUETA_LOG", "Edad correcta ");
+                    envoltorioEdad.setErrorEnabled(false);
+                }
+
             }
         }
+    }
+
+    private void mostrarSnackBar ()
+    {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.button), "FORMULARIO INCORRECTO", BaseTransientBottomBar.LENGTH_LONG);
+        snackbar.setAction("LIMPIAR", this::limpiarFormulario2);
+        snackbar.setActionTextColor(getResources().getColor(R.color.purple_500));
+        snackbar.show();
     }
 }
